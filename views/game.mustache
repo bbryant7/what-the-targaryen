@@ -9,9 +9,17 @@
 <body>
   <h1>What The Targaryen</h1>
   {{#roundDetails}}
-  {{guessedLetters}}
+  <p>{{guessedLetters}}</p>
+  {{#letters}}
+  {{^guessed}}
   <!-- // on page show number of letters as dashes -->
-  <h2>{{#letters}}_ {{/letters}}</h2>
+  <span>_ </span>
+  {{/guessed}}
+  {{#guessed}}
+  <!-- // on page show number of letters as dashes -->
+  <span>{{letter}}</span>
+  {{/guessed}}
+  {{/letters}}
   {{/roundDetails}}
   <!-- // make form in mustache file -->
   <form class="gotgame" action="/handler" method="post">

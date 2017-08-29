@@ -59,17 +59,26 @@ app.get('/', function(req, res) {
   let round = content.charOptions[Math.floor(Math.random() * content.charOptions.length)].name;
   roundDetails.word = round.toUpperCase();
   console.log('roundDetails.word', roundDetails.word);
-  roundDetails.letters = roundDetails.word.split('')
-  console.log(roundDetails.letters);
+  let word = roundDetails.word;
+  let letters = roundDetails.letters;
+  createLettersArray(word, letters);
+  console.log('letters',letters);
   res.render('game', {roundDetails: roundDetails});
   console.log('the word this round is ' + round);
 })
+
+function createLettersArray(word, letters){
+  letters = word.split('').forEach((letter) => {
+    letters.push({letter: letter, guessed: false})
+  })
+  return letters;
+}
 
 app.post('/handler', function(req, res){
   // letter can be uppercase or lowercase
   let guess = req.body.guess.toUpperCase();
   console.log('guess is ',guess);
-  // if a user enters more than one letter generate invalid error message "try again"
+  // if a user enters more than one letter generate invalid error message
   req.checkBody('guess', 'please enter one letter at a time').isByteLength({min: 1, max: 1});
   req.checkBody('guess', 'please enter letters only').isAlpha();
   req.checkBody('guess', 'please enter a letter').notEmpty();
@@ -81,12 +90,15 @@ app.post('/handler', function(req, res){
     res.send(html);
   } else {
     // for loop to compare guess to letters array
+    console.log(roundDetails.letters[1].letter);
     for (var i = 0; i < roundDetails.letters.length; i++) {
-      if (roundDetails.letters[i] == guess){
-        roundDetails.guessedLetters.push(guess)
+      if (roundDetails.letters[i].letter == guess){
+        roundDetails.guessedLetters.push(guess);
+        roundDetails.letters[i].guessed = true;
+        console.log('what is happening', roundDetails.letters);
       }
     }
-    let html = 'your guess is: ' + guess;
+    console.log('what are the roundDetails',roundDetails);
     res.render('game', {roundDetails: roundDetails});
   }
 
