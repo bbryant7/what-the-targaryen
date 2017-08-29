@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+let expressValidator = require('express-validator');
 const mustacheExpress = require('mustache-express');
 
 app.engine('mustache', mustacheExpress());
@@ -9,6 +10,8 @@ app.set('view engine', 'mustache');
 app.use(bodyParser.urlencoded({
   extended: false
 }))
+app.use(expressValidator());
+
 
 let content = {
  charOptions: [{
@@ -47,14 +50,40 @@ let content = {
 let roundDetails =
 {activeGame: true, word: 'Devon', letters: []}
 
+// store the word in a session
+// req.session.roundDetails = roundDetails;
+
+
 app.get('/', function(req, res) {
+  // generate random word
   let round = content.charOptions[Math.floor(Math.random() * content.charOptions.length)].name;
-  roundDetails.word = round;
+  roundDetails.word = round.toUpperCase();
   console.log('roundDetails.word', roundDetails.word);
   roundDetails.letters = roundDetails.word.split('')
   console.log(roundDetails.letters);
   res.render('game', {roundDetails: roundDetails});
   console.log('the word this round is ' + round);
+})
+
+app.post('/handler', function(req, res){
+  // letter can be uppercase or lowercase
+  let guess = req.body.guess.toUpperCase();
+  console.log('guess is ',guess);
+  // if a user enters more than one letter generate invalid error message "try again"
+  req.checkBody('guess', 'please enter one letter at a time').isByteLength({min: 1, max: 1});
+  req.checkBody('guess', 'please enter letters only').isAlpha();
+  req.checkBody('guess', 'please enter a letter').notEmpty();
+  console.log();
+// form should be validated to make sure only one letter is sent
+  let errors = req.validationErrors();
+  if (errors) {
+    let html = errors;
+    res.send(html);
+  } else {
+    let suer = req.body.user;
+    let html = 'your guess is: ' + guess;
+    res.send(html);
+  }
 })
 
 
@@ -66,15 +95,6 @@ app.listen(3000, function() {
 /////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 //
-// when not in session show blanks
-// generate random word
-// store the word in a session
-// on page show number of letters as dashes
-// let user input guess (string of 1 letter)
-// make form in mustache file
-// form should be validated to make sure only one letter is sent
-// letter can be uppercase or lowercase
-// if a user enters more than one letter generate invalid error message "try again"
 // let user know if their guess appears in the word - if correct
 // store users guess in session
 // display partially guessed word
