@@ -48,7 +48,7 @@ let content = {
 }
 
 let roundDetails =
-{activeGame: true, word: 'Devon', letters: []}
+{activeGame: true, word: 'Devon', letters: [], guessedLetters: []}
 
 // store the word in a session
 // req.session.roundDetails = roundDetails;
@@ -80,10 +80,16 @@ app.post('/handler', function(req, res){
     let html = errors;
     res.send(html);
   } else {
-    let suer = req.body.user;
+    // for loop to compare guess to letters array
+    for (var i = 0; i < roundDetails.letters.length; i++) {
+      if (roundDetails.letters[i] == guess){
+        roundDetails.guessedLetters.push(guess)
+      }
+    }
     let html = 'your guess is: ' + guess;
-    res.send(html);
+    res.render('game', {roundDetails: roundDetails});
   }
+
 })
 
 
@@ -96,6 +102,9 @@ app.listen(3000, function() {
 ///////////////////////////////////////////////////////////////////////////////
 //
 // let user know if their guess appears in the word - if correct
+// if exists then do things
+// tell user it is correct
+// make letter visible to user
 // store users guess in session
 // display partially guessed word
 // display dashes that have not been guessed
