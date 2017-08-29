@@ -8,10 +8,14 @@
 
 <body>
   <h1>What The Targaryen</h1>
-  <p>Game of Thrones spelling challenge</p>
-  {{#profile}}
-  <h2>{{name}}</h2>
-  {{/profile}}
+  {{#roundDetails}}
+  <h2>{{#letters}}_ {{/letters}}</h2>
+  {{/roundDetails}}
+  <form class="gotgame" action="/handler" method="post">
+    <input type="text" name="guess" value="">
+    <input type="submit" name="enterguess" value="GUESS">
+  </form>
+
 </body>
 
 </html>
