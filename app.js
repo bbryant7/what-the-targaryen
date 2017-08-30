@@ -3,6 +3,7 @@ const app = express();
 const bodyParser = require('body-parser');
 let expressValidator = require('express-validator');
 const mustacheExpress = require('mustache-express');
+const session = require('express-session');
 
 app.engine('mustache', mustacheExpress());
 app.set('views', './views');
@@ -120,16 +121,17 @@ app.post('/handler', function(req, res) {
           roundDetails.guessedLetters.push(guess);
           roundDetails.letters[i].guessed = true;
           console.log('what is happening', roundDetails.letters);
-          if (roundDetails.letters[i].guessed == true) {
-            roundDetails.guessedRight = true;
-          }
+
         }
       }
-      if (roundDetails.guessedRight === true) {
-        roundDetails.correctGuess = false;
-        console.log('nope try again');
-      }
+    .every(areAllFalse);
+
     }
+    if (roundDetails.guessedRight === true) {
+      roundDetails.correctGuess = false;
+      console.log('nope try again');
+    }
+
     if (roundDetails.correctGuess === false) {
       roundDetails.numberOfGuesses -= 1;
     }
@@ -140,6 +142,10 @@ app.post('/handler', function(req, res) {
   }
 
 })
+
+function areAllFalse(element, index, array) {
+  return element = false;
+}
 
 
 app.listen(3000, function() {
