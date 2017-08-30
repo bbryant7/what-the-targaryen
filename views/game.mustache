@@ -20,7 +20,7 @@
       {{/guessed}}
       {{#guessed}}
         <!-- // let user know if their guess appears in the word - if correct -->
-        <span>{{letter}}</span>
+        <span>{{letter}} </span>
       {{/guessed}}
     {{/letters}}
   {{/roundDetails}}
@@ -37,6 +37,7 @@
 
   {{#roundDetails}}
     <p>remaining guesses: {{numberOfGuesses}}</p>
+    {{#win}}{{win}}{{/win}}
     {{#correctGuess}}
       <!-- // tell user it is correct -->
       <p>great guess! You are correct.</p>

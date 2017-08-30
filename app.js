@@ -68,7 +68,7 @@ let roundDetails = {
   letters: [],
   guessedLetters: [],
   numberOfGuesses: 8,
-  correctGuess: false
+  correctGuess: true
 }
 
 // store the word in a session
@@ -128,22 +128,18 @@ app.post('/handler', function(req, res) {
   } else {
     // for loop to compare guess to letters array
     console.log(roundDetails.letters[1].letter);
+    if (!roundDetails.guessedLetters.includes(guess)) {
+      roundDetails.guessedLetters.push(guess);
+    }
     roundDetails.correctGuess = false;
     for (var i = 0; i < roundDetails.letters.length; i++) {
       if (roundDetails.letters[i].letter === guess) {
-        roundDetails.guessedLetters.push(guess);
+
         roundDetails.letters[i].guessed = true;
         roundDetails.correctGuess = true;
         console.log('what is happening', roundDetails.letters);
       }
-
-      // roundDetails.guessedLetters.every(areAllFalse);
-
     }
-    // if (roundDetails.correctGuess === true) {
-    //   roundDetails.correctGuess = false;
-    //   console.log('nope try again');
-    // }
 
     if (roundDetails.correctGuess === false) {
       roundDetails.numberOfGuesses -= 1;
@@ -152,9 +148,27 @@ app.post('/handler', function(req, res) {
 
 
     console.log('what are the roundDetails', roundDetails);
-    res.render('game', {
-      roundDetails: roundDetails
-    });
+    roundDetails.activeGame = false;
+    for (let i = 0; i < roundDetails.word.length; i++) {
+      if (!roundDetails.guessedLetters.includes(roundDetails.word.charAt(i))) {
+        roundDetails.activeGame = true;
+      }
+    }
+
+    if (roundDetails.activeGame) {
+
+      res.render('game', {
+        roundDetails: roundDetails
+      });
+    } else {
+      res.render('game', {
+        roundDetails: roundDetails,
+        win: 'You win!'
+      });
+
+
+    }
+
   }
 
 })
@@ -173,7 +187,7 @@ app.listen(3000, function() {
 ///////////////////////////////////////////////////////////////////////////////
 //
 
-// guesses left is determined by what is stored in session - get session to keep count
+
 // a user loses a guess when they guess incorrectly but not if they guess correctly or if they guess the same letter twice
 // game ends when user constructs the full word or runs out of guesses
 // if a player runs out of guesses reveal whole word and display that they lost
