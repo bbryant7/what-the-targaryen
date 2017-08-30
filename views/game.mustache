@@ -8,18 +8,21 @@
 
 <body>
   <h1>What The Targaryen</h1>
+  <!-- // display partially guessed word -->
+  <!-- // display dashes that have not been guessed -->
   {{#roundDetails}}
-  <p>{{guessedLetters}}</p>
-  {{#letters}}
-  {{^guessed}}
-  <!-- // on page show number of letters as dashes -->
-  <span>_ </span>
-  {{/guessed}}
-  {{#guessed}}
-  <!-- // on page show number of letters as dashes -->
-  <span>{{letter}}</span>
-  {{/guessed}}
-  {{/letters}}
+    <!-- // make letter visible to user -->
+    <p>{{guessedLetters}}</p>
+    {{#letters}}
+      {{^guessed}}
+      <!-- // on page show number of letters as dashes -->
+      <span>_ </span>
+      {{/guessed}}
+      {{#guessed}}
+        <!-- // let user know if their guess appears in the word - if correct -->
+        <span>{{letter}}</span>
+      {{/guessed}}
+    {{/letters}}
   {{/roundDetails}}
   <!-- // make form in mustache file -->
   <form class="gotgame" action="/handler" method="post">
@@ -27,7 +30,20 @@
     <input type="text" name="guess" value="">
     <input type="submit" name="enterguess" value="GUESS">
   </form>
+  <!-- // remind user of how many guesses they have left after each round -->
 
+  {{#roundDetails}}
+  <p>remaining guesses: {{numberOfGuesses}}</p>
+  {{#letters}}
+  {{#guessed}}
+  <!-- // tell user it is correct -->
+    <p>great guess! You are correct.</p>
+  {{/guessed}}
+  {{^correctGuess}}
+  <p>nope, try again.</p>
+  {{/correctGuess}}
+  {{/letters}}
+  {{/roundDetails}}
 </body>
 
 </html>
