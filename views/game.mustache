@@ -30,19 +30,20 @@
     <input type="text" name="guess" value="">
     <input type="submit" name="enterguess" value="GUESS">
   </form>
+  {{#errors}}
+    {{msg}}<br>
+  {{/errors}}
   <!-- // remind user of how many guesses they have left after each round -->
 
   {{#roundDetails}}
-  <p>remaining guesses: {{numberOfGuesses}}</p>
-  {{#letters}}
-  {{#guessed}}
-  <!-- // tell user it is correct -->
-    <p>great guess! You are correct.</p>
-  {{/guessed}}
-  {{^correctGuess}}
-  <p>nope, try again.</p>
-  {{/correctGuess}}
-  {{/letters}}
+    <p>remaining guesses: {{numberOfGuesses}}</p>
+    {{#correctGuess}}
+      <!-- // tell user it is correct -->
+      <p>great guess! You are correct.</p>
+    {{/correctGuess}}
+    {{^correctGuess}}
+    <p>nope, try again.</p>
+    {{/correctGuess}}
   {{/roundDetails}}
 </body>
 

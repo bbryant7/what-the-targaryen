@@ -5,6 +5,7 @@ let expressValidator = require('express-validator');
 const mustacheExpress = require('mustache-express');
 const session = require('express-session');
 
+
 app.engine('mustache', mustacheExpress());
 app.set('views', './views');
 app.set('view engine', 'mustache');
@@ -18,6 +19,13 @@ app.use(expressValidator({
     }
   }
 }));
+
+app.use(session({
+  secret: 'keyboard cat',
+  resave: false,
+  saveUninitialized: true
+}))
+
 
 
 let content = {
@@ -60,7 +68,7 @@ let roundDetails = {
   letters: [],
   guessedLetters: [],
   numberOfGuesses: 8,
-  correctGuess: true
+  correctGuess: false
 }
 
 // store the word in a session
@@ -89,6 +97,7 @@ function createLettersArray(word, letters) {
       guessed: false
     })
   })
+  console.log(letters);
   return letters;
 }
 
@@ -105,36 +114,43 @@ app.post('/handler', function(req, res) {
   req.checkBody('guess', 'please enter a letter').notEmpty();
   // display a message letting them know they already guessed that letter and ask them to try again
   console.log('guessedLetters', roundDetails.guessedLetters);
+
   req.checkBody('guess', 'you already guessed that letter').notDuplicate(roundDetails.guessedLetters);
   // form should be validated to make sure only one letter is sent
   let errors = req.validationErrors();
   // user is allowed 8 guesses
   if (errors) {
-    let html = errors;
-    res.send(html);
+    // display error message on page
+    res.render('game', {
+      roundDetails: roundDetails,
+      errors: errors
+    });
   } else {
     // for loop to compare guess to letters array
     console.log(roundDetails.letters[1].letter);
-    if (roundDetails.correctGuess === true) {
-      for (var i = 0; i < roundDetails.letters.length; i++) {
-        if (roundDetails.letters[i].letter == guess) {
-          roundDetails.guessedLetters.push(guess);
-          roundDetails.letters[i].guessed = true;
-          console.log('what is happening', roundDetails.letters);
-
-        }
+    roundDetails.correctGuess = false;
+    for (var i = 0; i < roundDetails.letters.length; i++) {
+      if (roundDetails.letters[i].letter === guess) {
+        roundDetails.guessedLetters.push(guess);
+        roundDetails.letters[i].guessed = true;
+        roundDetails.correctGuess = true;
+        console.log('what is happening', roundDetails.letters);
       }
-    .every(areAllFalse);
+
+      // roundDetails.guessedLetters.every(areAllFalse);
 
     }
-    if (roundDetails.guessedRight === true) {
-      roundDetails.correctGuess = false;
-      console.log('nope try again');
-    }
+    // if (roundDetails.correctGuess === true) {
+    //   roundDetails.correctGuess = false;
+    //   console.log('nope try again');
+    // }
 
     if (roundDetails.correctGuess === false) {
       roundDetails.numberOfGuesses -= 1;
     }
+
+
+
     console.log('what are the roundDetails', roundDetails);
     res.render('game', {
       roundDetails: roundDetails
@@ -156,7 +172,7 @@ app.listen(3000, function() {
 /////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 //
-// store users guess in session
+
 // guesses left is determined by what is stored in session - get session to keep count
 // a user loses a guess when they guess incorrectly but not if they guess correctly or if they guess the same letter twice
 // game ends when user constructs the full word or runs out of guesses
